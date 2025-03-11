@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>简单个人网站——学习内容</title>
+    <link rel="stylesheet" href="./menu.css">
+    <style>
+        .study-form {
+            width: 60%;
+            height: 80%;
+            background-color: #21262d;
+            color: #efefef;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            border-radius: 8px;
+            box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
+            padding-left: 5px;
+            padding-right: 30px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, color 0.3s, border-color 0.3s, border-width 0.3s;
+            font-size: 20px;
+            border: 1px solid #3d444d;
+        }
+        .study-form:hover {
+            border: 2px solid #9198a1;
+        }
+        .content {
+            text-align: left;
+            font-size: 18px;
+        }
+        ol {
+            list-style: none;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script src="./auth.js"></script>
+    <script>
+        window.onload = function () {
+            const sessionId = sessionStorage.getItem("sessionId");
+            if (sessionId) {
+                const loginId = JSON.parse(sessionId).loginId;
+                const userInfo = JSON.parse(localStorage.getItem(loginId + "info"));
+                if (userInfo) {
+                    document.getElementById("signing").innerHTML =
+                        `当前登录：${userInfo.username} <a href='./signin.html' class='url-form' onclick='reLogin()'>退出登录</a>`;
+                } else {
+                    document.getElementById("signing").innerHTML = "未登录，<a href='./signin.html' class='url-form' onclick='reLogin()'>立即登录</a>";
+                }
+            } else {
+                document.getElementById("signing").innerHTML = "未登录，<a href='./signin.html' class='url-form' onclick='reLogin()'>立即登录</a>";
+            }
+        };
+        function reLogin() {
+            sessionStorage.removeItem("sessionId");
+            sessionStorage.removeItem("sign");
+        }
+        // 菜单切换
+        function toggleMenu() {
+            const menu = document.getElementById('menu');
+            menu.classList.toggle('open');
+        }
+    </script>
+</head>
+<body>
+    <div class="header" onclick="toggleMenu()">☰&nbsp;&nbsp;菜单</div>
+    <div class="menu" id="menu">
+        <div class="close-btn" onclick="toggleMenu()">&times;</div>
+        <br/><br/><br/><br/>
+        <div class="menu-item" onclick="location.href='./index.html'">&nbsp;&nbsp;主页</div>
+        <div class="menu-item" onclick="location.href='./bio.html'">&nbsp;&nbsp;个人简历</div>
+        <div class="menu-item" onclick="location.href='./study.html'">&nbsp;&nbsp;我的理想</div>
+        <div class="menu-item" onclick="location.href='./life.html'">&nbsp;&nbsp;我的生活</div>
+        <div class="menu-item" onclick="location.href='./study.html'">&nbsp;&nbsp;学习内容</div><br/>
+        <hr/>
+        <div class="userPanel" id="signing">未登录，<a href='./signin.html' class='url-form' onclick='reLogin()'>立即登录</a></div>
+    </div>
+    <div class="study-form">
+        <h2>学习内容</h2>
+        <div class="content">
+        <ol>
+            <li><p>　　大一上：计算机基础、C语言程序设计</p></li>
+            <li><p>　　大一下：C++程序设计、离散数学</p></li>
+            <li><p>　　大二上：数据结构、Java程序设计、数据库基础</p></li>
+            <li><p>　　大二下：算法设计与分析、Vue.js+SpringBoot、软件工程导论</p></li>
+            <li><p>　　大三上：…………</p></li>
+            <li><p>　　大三下：…………</p></li>
+            <li><p>　　大四上：…………</p></li>
+            <li><p>　　大四下：…………</p></li>
+        </ol>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>简单个人网站——登录</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #0d1117;
+        }
+        .application-main {
+            text-align: center;
+            color: #fff;
+            background-color: #151b23;
+            padding: 18px;
+            border-radius: 8px;
+            border: 1px solid #3d444d;
+            max-width: 300px;
+            width: 100%;
+        }
+        .auth-form-body h2 {
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: #fff;
+            text-align: center;
+        }
+        label {
+            display: block;
+            margin: 10px 0 5px;
+            text-align: left;
+        }
+        input[type="text"], input[type="password"] {
+            width: calc(100% - 35px);
+            padding: 8px;
+            color: #fff;
+            margin-bottom: 10px;
+            border: 1px solid #3d444d;
+            border-radius: 5px;
+            background-color: #0d1117;
+            outline: none;
+            transition: border-color 0.3s, border-width 0.3s;
+        }
+        input[type="text"]:focus, input[type="password"]:focus {
+            border-color: #4493F8;
+            border-width: 2px;
+        }
+        .btn {
+            background-color: #29903B;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            width: calc(100% - 18px);
+            font-size: 16px;
+        }
+        .btn:hover {
+            background-color: #218838;
+        }
+        .url-form {
+            color: #4493F8;
+            text-align: left;
+            display: inline-block;
+            margin-top: 10px;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+</head>
+<body>
+    <div class="application-main">
+        <div class="auth-form-body">
+            <h2>登录到简单个人网站</h2>
+            <label for="loginId">&nbsp;&nbsp;用户名</label>
+            <input type="text" name="login" id="loginId" class="form-control" required>
+            <label for="password">&nbsp;&nbsp;密码</label>
+            <input type="password" name="password" id="password" class="form-control" required><br/><br/>
+            <button type="button" class="btn" onclick="checkSubmit()">登&nbsp;录</button>
+            <p>
+                没有账号? 
+                <a href="./signup.html" class="url-form">创建一个账号</a>
+            </p>
+        </div>
+    </div>
+    <script>
+        async function checkSubmit() {
+            try {
+                const userName = document.getElementById("loginId").value;
+                const passWord = document.getElementById("password").value;
+                const hash = CryptoJS.SHA256(passWord).toString();
+                const result = localStorage.getItem(userName);
+                if (result === null) {
+                    document.getElementById("loginId").value = "";
+                    document.getElementById("password").value = "";
+                    alert("用户不存在！");
+                    return "NOT_FOUND";
+                }
+                if (result === hash) {
+                    const sessionId = {
+                        loginId: userName,
+                        expiryDate: Date.now() + 600000
+                    };
+                    const sessionIdStr = JSON.stringify(sessionId);
+                    sessionStorage.setItem("sessionId", sessionIdStr);
+                    sessionStorage.setItem("sign", CryptoJS.SHA256(sessionIdStr).toString());
+                    window.open("./index.html", "_self");
+                    return "SUCCESS";
+                } else {
+                    document.getElementById("password").value = "";
+                    alert("密码错误！");
+                    return "PASSWORD_ERROR";
+                }
+            } catch (error) {
+                alert("登录时出错！");
+                console.log(error);
+                return "LOGIN_ERROR";
+            }
+        }
+    </script>
+</body>
+</html>

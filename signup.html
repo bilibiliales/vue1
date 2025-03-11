@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>简单个人网站——注册</title>
+        <style>
+            input[type="text"], input[type="password"], input[type="tel"], input[type="email"] {
+                width: calc(20%);
+                padding: 10px;
+                color: black;
+                margin-bottom: 0px;
+                border: 1px solid #3d444d;
+                border-radius: 5px;
+                background-color: white;
+                outline: none;
+                transition: border-color 0.3s, border-width 0.3s;
+            }
+            input[type="text"]:focus, input[type="password"]:focus, input[type="tel"]:focus, input[type="email"]:focus {
+                border-color: #4493F8;
+                border-width: 2px;
+            }
+            .input-label {
+                display: inline-block;
+                width: calc(20% + 20px);
+                text-align: left;
+            }
+            .error-message {
+                color: #D1242F;
+                font-size: small;
+                display: none;
+                margin-top: 0px;
+            }
+            #bio {
+                width: calc(20% + 10px);
+                padding: 5px;
+                color: black;
+                margin-bottom: 0px;
+                border: 1px solid #3d444d;
+                border-radius: 5px;
+                background-color: white;
+                outline: none;
+                transition: border-color 0.3s, border-width 0.3s;
+            }
+            #bio:focus {
+                border-color: #4493F8;
+                border-width: 2px;
+            }
+            #agreement-text {
+                display: none;
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                width: 80%;
+                max-width: 600px;
+                height: auto;
+                background-color: white;
+                z-index: 1000;
+                color: black;
+                font-size: 16px;
+                padding: 20px;
+                box-sizing: border-box;
+                text-align: left;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+                overflow-y: auto;
+            }
+            #agreement {
+                font-size: large;
+            }
+            .header {
+                text-align: right;
+            }
+            .btn {
+                background-color: #1F2328;
+                color: white;
+                border: none;
+                padding: 10px;
+                border-radius: 5px;
+                cursor: pointer;
+                width: calc(20% + 25px);
+                font-size: 16px;
+                margin-top: 6px;
+            }
+            .btn:hover {
+                background-color: #32383f;
+            }
+            .agrbtn {
+                background-color: #1F2328;
+                color: white;
+                border: none;
+                padding: 10px;
+                border-radius: 5px;
+                width: calc(20%);
+                font-size: 16px;
+            }
+            .agrbtn:hover {
+                background-color: #32383f;
+            }
+            .url-form {
+                color: #4493F8;
+                display: inline-block;
+                margin-top: 10px;
+            }
+            .agreement-button {
+                color: #4493F8;
+                cursor: pointer;
+                text-decoration: underline;
+            }
+            .form-control {
+                margin-top: 10px;
+            }
+            .signup-form {
+                text-align: center;
+            }
+            .popup {
+                display: none;
+                position: fixed;
+                z-index: 1001;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                overflow: auto;
+                background-color: rgba(0,0,0,0.5);
+            }
+            .popup-content {
+                background-color: #fff;
+                margin: 15% auto;
+                padding: 20px;
+                border: 1px solid #888;
+                width: 80%;
+                max-width: 600px;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+                text-align: center;
+            }
+            .popup-text {
+                text-align: left;
+            }
+            .close-btn {
+                color: #aaa;
+                float: right;
+                font-size: 28px;
+                font-weight: bold;
+            }
+            .close-btn:hover,
+            .close-btn:focus {
+                color: black;
+                text-decoration: none;
+                cursor: pointer;
+            }
+        </style>
+        <script src="./localInfo.js"></script>
+        <script>
+            // 输入框验证函数
+            function validateInput(input, regex, errorMessage) {
+                if (!regex) {
+                    console.error('regex未定义');
+                    return false;
+                }
+                const isValid = regex.test(input.value);
+                const errorSpan = input.nextElementSibling?.nextElementSibling;
+                if (errorSpan) {
+                    errorSpan.textContent = isValid ? '' : errorMessage;
+                    errorSpan.style.color = isValid ? 'black' : '#D1242F';
+                    errorSpan.style.display = isValid ? 'none' : 'inline';
+                }
+                input.style.borderColor = isValid ? '#1A7F37' : '#D1242F';
+                return isValid;
+            }
+            window.onload = function() {
+                const provinceSelect = document.getElementById("province");
+                for (let i = 0; i < provinceArr.length; i++) {
+                    const option = document.createElement("option");
+                    option.value = i;
+                    option.textContent = provinceArr[i];
+                    provinceSelect.appendChild(option);
+                }
+                const inputs = document.querySelectorAll('input[type="text"], input[type="password"], input[type="tel"], input[type="email"]');
+                inputs.forEach(input => {
+                    input.addEventListener('blur', function() {
+                        let regex, errorMessage;
+                        if (input.type === 'text') {
+                            regex = /^.[a-zA-Z0-9]{7,21}$/;
+                            errorMessage = '请输入有效的用户名(限8-22位，限包含大小写字母或数字)';
+                        } else if (input.type === 'password') {
+                            regex = /^.[a-zA-Z0-9.-]{7,21}$/;
+                            errorMessage = '请输入有效的密码(限8-22位，限包含大小写字母、数字或字符)';
+                        } else if (input.type === 'tel') {
+                            regex = /^\+?[1-9]\d{10}$/;
+                            errorMessage = '请输入有效的+86地区电话号码(123xxxx1234)';
+                        } else if(input.type === 'email') {
+                            regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+                            errorMessage = '请输入有效的邮箱地址(example@email.com)';
+                        }
+                        validateInput(input, regex, errorMessage);
+                    });
+                });
+                const agreementText = document.querySelector(".agreement-button");
+                const agreementBox = document.getElementById("agreementbox");
+                const agreeSignup = document.getElementById("agreeSignup");
+                agreementText.addEventListener("click", showAgreement);
+                agreementBox.addEventListener("change", toggleAgreement);
+            };
+            function getCity() {
+                const provinceSelect = document.getElementById("province");
+                const citySelect = document.getElementById("city");
+                const selectedIndex = provinceSelect.selectedIndex;
+                const provinceValue = provinceSelect[selectedIndex].value;
+    
+                // 清空城市下拉列表
+                citySelect.innerHTML = "<option value=''>==请选择==</option>";
+    
+                // 填充城市下拉列表
+                if (cityArr[provinceValue]) {
+                    for (let i = 0; i < cityArr[provinceValue].length; i++) {
+                        const option = document.createElement("option");
+                        option.value = i;
+                        option.textContent = cityArr[provinceValue][i];
+                        citySelect.appendChild(option);
+                    }
+                }
+            }
+        </script>
+        <div class="header">
+            <p>已经有一个账号了？<a href="./signin.html" class="url-form">&nbsp;立即登录→</a>&nbsp;&nbsp;</p>
+        </div>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    </head>
+    <div class="signup-form">
+        <h2>注册简单个人网站账号</h2>
+        <label for="loginId" class="input-label">用户名<sup>*</sup></label><br/>
+        <input type="text" name="login" id="loginId" class="form-control" required placeholder="用户名"><br/>
+        <span class="error-message"></span><br/>
+        <label for="password" class="input-label">密码<sup>*</sup></label><br/>
+        <input type="password" name="password" id="password" class="form-control" required placeholder="密码"><br/>
+        <span class="error-message"></span><br/>
+        <label for="phoneNum" class="input-label">手机号(+86)<sup>*</sup></label><br/>
+        <input type="tel" name="tel" id="phoneNum" class="form-control" required placeholder="手机号码"><br/>
+        <span class="error-message"></span><br/>
+        <label for="email" class="input-label">邮箱<sup>*</sup></label><br/>
+        <input type="email" name="email" id="email" class="form-control" required placeholder="电子邮件地址"><br/>
+        <span class="error-message"></span><br/>
+        <label for="sex">性别&nbsp;</label>
+        <input type="radio" name="sex" id="男" value="男" class="form-control">男
+        <input type="radio" name="sex" id="女" value="女" class="form-control">女
+        <input type="radio" name="sex" id="保密" value="保密" class="form-control" checked>保密
+        <br/><br/>
+        <label for="local">籍贯&nbsp;</label>
+        <select name="province" id="province" onchange="getCity()">
+            <option value="">==请选择==</option>
+        </select>
+        <select name="city" id="city">
+            <option value="">==请选择==</option>
+        </select>
+        <br/><br/>
+        <label for="hobbies">爱好&nbsp;</label>
+        <input type="checkbox" name="hobby" id="hobby_reading" class="form-control"> 阅读
+        <input type="checkbox" name="hobby" id="hobby_sports" class="form-control"> 运动
+        <input type="checkbox" name="hobby" id="hobby_music" class="form-control"> 音乐
+        <input type="checkbox" name="hobby" id="hobby_travel" class="form-control"> 旅行
+        <br/><br/>
+        <label for="bio" class="input-label">个人介绍</label><br/>
+        <textarea name="bio" id="bio" rows="3" cols="50" class="form-control" placeholder="请输入个人介绍..."></textarea><br/>
+        <label>
+            <input type="checkbox" name="agreementbox" id="agreementbox" class="form-control" disabled required>
+            我同意<span class="agreement-button" onclick="toggleAgreement()">注册协议</span>
+        </label><br/>
+        <button type="button" class="btn" id="agreeSignup" onclick="signUp()" disabled>注册</button>
+        <div id="agreement-popup" class="popup">
+            <div class="popup-content">
+                <div class="popup-text">
+                <h2>注册协议</h2>
+                <h4>一、服务条款</h4>
+                <ol>
+                    <li>用户信息：</li>
+                    <ul>
+                        <li>您必须提供真实、准确、完整的个人信息进行注册。如果发现您提供的信息不实，本网站有权立即终止您的账户，并不承担任何责任。</li>
+                        <li>您有义务及时更新您的个人信息，以确保信息的准确性和有效性。</li>
+                    </ul>
+                    <li>服务使用</li>
+                    <ul>
+                        <li>您不得利用本网站从事任何违法、侵权、欺诈等行为。</li>
+                        <li>您不得干扰本网站的正常运行，包括但不限于传播病毒、恶意攻击等行为。</li>
+                        <li>本网站有权根据业务需要随时调整服务内容，包括但不限于增加、删除、修改功能等。</li>
+                    </ul>
+                </ol>
+                <h4>二、隐私政策</h4>
+                <ol>
+                    <li>信息收集与使用：</li>
+                    <ul>
+                        <li>本网站在注册过程中会收集您的基本信息，包括但不限于姓名、邮箱、电话号码等。</li>
+                        <li>我们将根据您的授权和本协议的规定，使用您的个人信息为您提供服务。</li>
+                    </ul>
+                    <li>信息共享与安全：</li>
+                    <ul>
+                        <li>我们不会擅自向第三方披露您的个人信息，除非事先获得您的同意或根据法律法规要求。</li>
+                        <li>在特殊情况下，如法律要求、国家安全需要等，我们可能会依法向相关部门提供您的信息。</li>
+                        <li><strong>本网站收集的所有数据仅保存在本地，如需删除所有用户信息，可以在浏览器设置中清除本网站的所有cookie和数据</strong></li>
+                    </ul>
+                </ol>
+                <h4>三、其他</h4>
+                <ol>
+                    <li>本协议的解释权归本网站所有。</li>
+                    <li>如本协议与相关法律法规相冲突，以法律法规为准。</li>
+                    <li>本协议自您注册成功之日起生效，至您注销账户或本网站终止服务时终止。</li>
+                </ol>
+                <p>请您仔细阅读并理解以上条款，如有任何疑问，请及时联系我们。感谢您的支持与配合！</p>
+                </div>
+                <button type="button" class="agrbtn" onclick="hideAgreement()">关闭</button>
+                <button type="button" class="agrbtn" onclick="downloadAgreement()">下载协议</button>
+            </div>
+        </div>
+    <body>     
+        <script>
+            function downloadAgreement() {
+                const blob = new Blob(["注册协议\n一、服务条款\n用户信息：\n您必须提供真实、准确、完整的个人信息进行注册。如果发现您提供的信息不实，本网站有权立即终止您的账户，并不承担任何责任。\n您有义务及时更新您的个人信息，以确保信息的准确性和有效性。\n服务使用\n您不得利用本网站从事任何违法、侵权、欺诈等行为。\n您不得干扰本网站的正常运行，包括但不限于传播病毒、恶意攻击等行为。\n本网站有权根据业务需要随时调整服务内容，包括但不限于增加、删除、修改功能等。\n二、隐私政策\n信息收集与使用：\n本网站在注册过程中会收集您的基本信息，包括但不限于姓名、邮箱、电话号码等。\n我们将根据您的授权和本协议的规定，使用您的个人信息为您提供服务。\n信息共享与安全：\n我们不会擅自向第三方披露您的个人信息，除非事先获得您的同意或根据法律法规要求。\n在特殊情况下，如法律要求、国家安全需要等，我们可能会依法向相关部门提供您的信息。\n本网站收集的所有数据仅保存在本地，如需删除所有用户信息，可以在浏览器设置中清除本网站的所有cookie和数据\n三、其他\n本协议的解释权归本网站所有。\n如本协议与相关法律法规相冲突，以法律法规为准。\n本协议自您注册成功之日起生效，至您注销账户或本网站终止服务时终止。\n请您仔细阅读并理解以上条款，如有任何疑问，请及时联系我们。感谢您的支持与配合！"], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = '简单个人网站注册协议.txt';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }
+            // 显示服务协议
+            function showAgreement() {
+                const agreementPopup = document.getElementById("agreement-popup");
+                agreementPopup.style.display = "block";
+            }
+            // 隐藏服务协议
+            function hideAgreement() {
+                const agreementPopup = document.getElementById("agreement-popup");
+                agreementPopup.style.display = "none";
+                document.getElementById("agreementbox").disabled = false;
+            }
+            // 切换协议勾选状态
+            function toggleAgreement() {
+                const agreementBox = document.getElementById("agreementbox");
+                const agreeSignup = document.getElementById("agreeSignup");
+                if (agreementBox.checked) {
+                    agreeSignup.disabled = false;
+                } else {
+                    agreeSignup.disabled = true;
+                }
+            }
+            // 注册事件
+            function signUp() {
+                var captcha = new Date().getMilliseconds()*4321;
+                alert("【注册验证码】：" + captcha + "，这是你在简单个人网站申请注册时发送的验证码，请勿泄漏给其他人。验证码仅在本地生成和处理验证，如对我们的隐私策略有疑问，可随时查看注册协议中的隐私政策部分。");
+                var result = prompt("请输入刚才看到的验证码");
+                if(result != captcha){
+                    alert("验证码错误，请重新获取");
+                    return ;
+                }
+                // 逐个验证所有限制项
+                const inputs = document.querySelectorAll('input[type="text"], input[type="password"], input[type="tel"], input[type="email"]');
+                let isValid = true;
+                let regex, errorMessage;
+                inputs.forEach(input => {
+                    if (input.type === 'text') {
+                        regex = /^.[a-zA-Z0-9]{7,21}$/;
+                        errorMessage = '请输入有效的用户名(限8-22位，限包含大小写字母或数字)';
+                    } else if (input.type === 'password') {
+                        regex = /^.[a-zA-Z0-9.-]{7,21}$/;
+                        errorMessage = '请输入有效的密码(限8-22位，限包含大小写字母、数字或字符)';
+                    } else if (input.type === 'tel') {
+                        regex = /^\+?[1-9]\d{10}$/;
+                        errorMessage = '请输入有效的+86地区电话号码(123xxxx1234)';
+                    } else if (input.type === 'email') {
+                        regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+                        errorMessage = '请输入有效的邮箱地址(example@email.com)';
+                    }
+                    isValid = validateInput(input, regex, errorMessage) && isValid;
+                });
+                // 验证是否勾选协议
+                const agreementBox = document.getElementById("agreementbox");
+                if (!agreementBox.checked) {
+                    alert("请勾选注册协议");
+                    isValid = false;
+                }
+                if (localStorage.getItem(document.getElementById("loginId").value)) {
+                    alert("这个账号已经被注册过了，换一个用户名吧");
+                    isValid = false;
+                }
+                if (isValid) {
+                    // 存储用户名密码字段用于登录
+                    const userName = document.getElementById("loginId").value;
+                    const passWord = document.getElementById("password").value;
+                    const hash = CryptoJS.SHA256(passWord).toString();
+                    localStorage.setItem(userName, hash);
+        
+                    const phone = document.getElementById("phoneNum").value;
+                    const email = document.getElementById("email").value;
+                    const sex = document.querySelector('input[name="sex"]:checked')?.value || "保密";
+                    const province = document.getElementById("province").value || "无";
+                    const city = document.getElementById("city").value || "无";
+                    const hobbies = Array.from(
+                        document.querySelectorAll('input[name="hobby"]:checked')
+                    ).map(input => input.value) || [];
+                    const bio = document.getElementById("bio").value || "这个人很懒，什么都没有写~";
+                    const formData = {
+                        username: userName,
+                        phone: phone,
+                        email: email,
+                        sex: sex,
+                        province: province,
+                        city: city,
+                        hobbies: hobbies,
+                        bio: bio
+                    };
+                    localStorage.setItem(userName+"info",JSON.stringify(formData));
+                    alert("账号注册成功，点击确定跳转到登录页面");
+                    window.open("./signin.html", "_self");
+                }
+            }
+        </script>
+    </body>
+</html>

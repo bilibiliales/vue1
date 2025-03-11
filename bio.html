@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>简单个人网站——个人简历</title>
+    <link rel="stylesheet" href="./menu.css">
+    <style>
+        body {
+            background-color: #0d1117;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+        .box-container {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+        }
+        .box {
+            width: 350px;
+            height: 300px;
+            background-color: #21262d;
+            color: #9198a1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: left;
+            border-radius: 8px;
+            box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
+            padding-left: 20px;
+            padding-right: 10px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, color 0.3s;
+            font-size: 18px;
+        }
+        .box h4 {
+            margin: 0 0 15px 0;
+            font-size: 20px;
+            text-align: center;
+        }
+        .box:hover {
+            transform: scale(1.1);
+            color: #efefef;
+            box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.7);
+        }
+        .userPanel {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script src="./auth.js"></script>
+    <script>
+        window.onload = function () {
+            const sessionId = sessionStorage.getItem("sessionId");
+            if (sessionId) {
+                const loginId = JSON.parse(sessionId).loginId;
+                const userInfo = JSON.parse(localStorage.getItem(loginId + "info"));
+                if (userInfo) {
+                    document.getElementById("signing").innerHTML =
+                        `当前登录：${userInfo.username} <a href='./signin.html' class='url-form' onclick='reLogin()'>退出登录</a>`;
+                } else {
+                    document.getElementById("signing").innerHTML = "未登录，<a href='./signin.html' class='url-form' onclick='reLogin()'>立即登录</a>";
+                }
+            } else {
+                document.getElementById("signing").innerHTML = "未登录，<a href='./signin.html' class='url-form' onclick='reLogin()'>立即登录</a>";
+            }
+        };
+        function reLogin() {
+            sessionStorage.removeItem("sessionId");
+            sessionStorage.removeItem("sign");
+        }
+        // 菜单切换
+        function toggleMenu() {
+            const menu = document.getElementById('menu');
+            menu.classList.toggle('open');
+        }
+    </script>
+</head>
+<body>
+    <div class="header" onclick="toggleMenu()">☰&nbsp;&nbsp;菜单</div>
+    <div class="menu" id="menu">
+        <div class="close-btn" onclick="toggleMenu()">&times;</div>
+        <br/><br/><br/><br/>
+        <div class="menu-item" onclick="location.href='./index.html'">&nbsp;&nbsp;主页</div>
+        <div class="menu-item" onclick="location.href='./bio.html'">&nbsp;&nbsp;个人简历</div>
+        <div class="menu-item" onclick="location.href='./ideal.html'">&nbsp;&nbsp;我的理想</div>
+        <div class="menu-item" onclick="location.href='./life.html'">&nbsp;&nbsp;我的生活</div>
+        <div class="menu-item" onclick="location.href='./study.html'">&nbsp;&nbsp;学习内容</div><br/>
+        <hr/>
+        <div class="userPanel" id="signing">未登录，<a href='./signin.html' class='url-form' onclick='reLogin()'>立即登录</a></div>
+    </div>
+    <div class="box-container">
+        <div class="box"><h4>个人信息</h4>
+            <ul>
+                <li>姓名：尹小雪</li>
+                <li>出生年月：2000 11</li>
+                <li>学历：专科</li>
+                <li>民族：汉</li>
+            </ul>
+        </div>
+        <div class="box"><h4>联系方式</h4>
+            <ul>
+                <li>qq：2112341452</li>
+                <li>电话：13686843457</li>
+                <li>微信：大使的翅膀</li>
+                <li>地址：<a href="https://www.ganzhsz.cn/" class="url-form">赣州高等专科学校</a></li>
+                <li><strong>毕业学校：</strong><a href="https://www.ganzhsz.cn/" class="url-form">赣州高等专科学校</a></li>
+            </ul>
+        </div>
+        <div class="box"><h4>兴趣爱好</h4><br/>
+            喜欢听音乐、打排球、看电影、逛街、打王者、也喜欢说英语。</div>
+        <div class="box"><h4>特殊技能</h4><br/>
+            会前端如css，html，js，vue.js，react.js等，以及后端如java，Spring Boot，Redis，分布式等
+        </div>
+    </div>
+</body>
+</html>
