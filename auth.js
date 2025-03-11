@@ -9,7 +9,7 @@
         try {
             const sessionId = JSON.parse(sessionIdStr);
             const currentTime = Date.now();
-            if (currentTime > sessionId.expiryDate + 60000*100000000) {
+            if (currentTime > sessionId.expiryDate + 60000) {
                 alert("登录已过期，请重新登录");
                 reLogin();
                 return false;
